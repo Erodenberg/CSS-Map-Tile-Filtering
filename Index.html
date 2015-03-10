@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!--
+Inspired by http://html5-demos.appspot.com/static/css/filters/index.html... thanks to author Eric Bidelman (ericbidelman@chromium.org) for the inspiration.  App has been modified to support all browswer types and show users of the Javascript API for ArcGIS how to apply css filters to map tiles.
+-->
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+<title>CSS Map Tile Filtering</title>
+<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<link href="CSS/css00000.css" rel="stylesheet" type="text/css">
+<link href="CSS/common00.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="//js.arcgis.com/3.12/dijit/themes/claro/claro.css">
+<link rel="stylesheet" href="//js.arcgis.com/3.12/esri/css/esri.css">
+<script src="//js.arcgis.com/3.12/"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+<script src="Javascript/jquery.details.js"></script>
+ <script>
+     $(function() {
+       // Add conditional classname based on support
+       $('html').addClass($.fn.details.support ? 'details' : 'no-details');
+       // Emulate <details> where necessary and enable open/close event handlers
+       $('details').details();
+     });
+ </script>
+ 
+ <script>
+    var map;
+				require(["esri/map",
+								 "esri/dijit/BasemapGallery",
+                 "esri/arcgis/utils",
+                 "dojo/parser",
+                 "dijit/layout/BorderContainer",
+                 "dijit/layout/ContentPane",
+                 "dijit/TitlePane",
+								 "dojo/domReady!"
+								], function(
+									Map, BasemapGallery, arcgisUtils, parser
+								) {
+                  parser.parse();
+            
+									map = new Map("mapDiv", {
+										center: [-82.999005,39.961325],
+										zoom: 14,
+										basemap: "topo"
+									});
+
+								 //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
+                 var basemapGallery = new BasemapGallery({
+                    showArcGISBasemaps: true,
+                    map: map
+                  }, "basemapGallery");
+                  basemapGallery.startup();
+
+                  basemapGallery.on("error", function(msg) {
+                    console.log("basemap gallery error:  ", msg);
+                  });
+	           });    
+ </script>
+</head>
+<body class="claro">
+
+<details>
+  <summary>What's this?</summary>
+  <div>
+    <p>Demo showing CSS <a href="//dev.w3.org/fxtf/filters/" target="_blank">Filter Effects 1.0</a>,
+    specifically the <a href="//dev.w3.org/fxtf/filters/#typedef-filter-function-list" target="_blank">filter functions</a>,
+    which are being implemented in Webkit.</p>
+    <p>In Webkit, filters can be applied to map tiles using the following css markup( e.g. <code>.layerTile {<br/>-webkit-filter: grayscale(1); /*Older webkit versions of Chrome & Safari */<br/> -webkit-filter: grayscale(100%) /*Chrome & Safari */ <br/> -moz-filter: grayscale (100%); /* Mozilla Firefox */<br/>	-ms-filter: grayscale(100%); /* IE10+ */ <br/>	-o-filter: grayscale(100%); /* Opera */ <br/>
+	filter: grayscale(100%); /*CSS*/<br/><b>/* This is for Firefox 3.5+, Firefox Mobile */</b><br/> filter: &lt;url to svg file&gt;(filters.svg#grayscale); <br/>}</code> ). <br/>
+    For a detailed explaination of filtering techniques check out <a href="http://www.html5rocks.com/en/tutorials/filters/understanding-css/" target="_blank">Understanding CSS Filter Effects</a></p>
+    <p><b>To learn more about browser support:</b> <a href="http://caniuse.com/#feat=css-filters" target="_blank">Can I Use: CSS Filter Effects</a></p>
+  </div>
+</details>
+
+<hgroup>
+  <h2>CSS Map Tile Filtering</h2>
+</hgroup>
+
+<article>
+  <section>
+    <div data-dojo-type="dijit/layout/BorderContainer" 
+       data-dojo-props="design:'headline', gutters:false" 
+       style="width:100%;height:100%;margin:0;">
+        
+      <div id="mapDiv" class="map" data-dojo-type="dijit/layout/ContentPane" 
+           style="padding:0;">
+    
+        <div style="position:absolute; right:20px; top:10px; z-Index:999;">
+          <div data-dojo-type="dijit/TitlePane" 
+               data-dojo-props="title:'Switch Basemap', closable:false, open:false">
+             <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
+                <div id="basemapGallery"></div>
+             </div>
+          </div>
+        </div>
+       </div>
+     </div>
+  </section>
+  <section>
+    <output name="filterApplied" id="filterName" for="filterSlider">.layerTile{
+      <br>&emsp;-webkit-filter: none;
+      <br>&emsp;-moz-filter: none;
+      <br>&emsp;-ms-filter: none;
+      <br>&emsp;-o-filter: none;
+      <br>&emsp;-filter: none;
+      <br>}</output>
+  </section>
+  <section class="cols">
+    <span><span>grayscale</span><input type="range" oninput="set('grayscale', this.valueAsNumber);" id="grayscale" value="0" step="0.1" min="0" max="1"></span>  
+	  <span><span>sepia</span><input type="range" oninput="set('sepia', this.valueAsNumber);" id="sepia" value="0" step="0.1" min="0" max="1"></span>
+    <span><span>brightness</span><input type="range" oninput="set('brightness', this.valueAsNumber);" id="brightness" value="0" step="0.1" min="0" max="10"></span>
+    <span><span>contrast</span><input type="range" oninput="set('contrast', this.valueAsNumber);" id="contrast" value="0" step="0.1" min="0" max="10"></span>
+    <span><span>hue-rotate</span><input type="range" oninput="set('hue-rotate', this.value + 'deg');" id="hue-rotate" value="0" step="30" min="0" max="360"></span>
+    <span><span>invert</span><input type="range" oninput="set('invert', this.valueAsNumber);" id="invert" value="0" step="0.1" min="0" max="1"></span>
+    <span><span>saturate</span><input type="range" oninput="set('saturate', this.valueAsNumber);" id="saturate" value="0" step="0.1" min="0" max="10"></span>
+    <span><span>opacity</span><input type="range" oninput="set('opacity', this.valueAsNumber );" id="opacity" value="0" step="0.1" min="0" max="1"></span>
+    <span><button onclick="reset()" style="margin-top:10px;">reset</button></span>
+  </section>
+</article>
+
+<img id="esri-logo" src="Images/esri-10GlobeLogo_sRGB_.png">
+    
+<script>
+var FILTER_VALS = {};
+var FILTER_WVALS = {};
+var el = document.getElementsByClassName("layerTile"); 
+    
+function reset() {
+  FILTER_VALS = {};
+  FILTER_WVALS = {};
+  render();
+  document.querySelector('output').innerHTML = '.layerTile { <br>&nbsp;&nbsp;-webkit-filter: none; <br>&nbsp;&nbsp;-moz-filter: none;<br>&nbsp;&nbsp;-ms-filter: none;<br>&nbsp;&nbsp;-o-filter: none;<br>&nbsp;&nbsp;-filter: none;<br>}';
+  var ranges = document.querySelectorAll('input[type="range"]');
+  for (var i = 0, r; r = ranges[i]; i++) {
+    r.value = r.min;
+  }
+}
+
+function set(filter, value) {
+  FILTER_VALS[filter] = typeof value == 'number' ? Math.round(value * 10) / 10 : value;
+  FILTER_WVALS[filter] = typeof value == 'number' ? Math.round(value * 100) : value;
+  if (value == 0 || (typeof value == 'string' && value.indexOf('0') == 0)) {
+    delete FILTER_VALS[filter];
+    delete FILTER_WVALS[filter];
+  }
+  render();
+}
+
+function render() {
+  var vals = [];
+  var wvals = [];
+  Object.keys(FILTER_VALS).sort().forEach(function(key, i) {
+    vals.push(key + '(' + FILTER_VALS[key] + ')');
+  });
+  Object.keys(FILTER_WVALS).sort().forEach(function(key, i) {
+    wvals.push(key + '(' + FILTER_WVALS[key] + ')');
+   });
+  var val = vals.join(' ');
+  var wval = wvals.join(' ');
+  if (wval.search('\\)') !== -1){
+    wval = wval.replace(/\)/g, "%)")
+  }
+  console.log(wval);
+  if (wval.search('deg%\\)') !== -1){
+    wval = wval.replace(/deg%\)/g, "deg)")
+  }  
+  for(var i = 0; i < el.length; i++){
+        var elem = document.getElementById(el[i].id);
+        elem.style.webkitFilter = val;
+        elem.style.MozFilter = wval;
+        elem.style.msFilter = wval;
+        elem.style.OFilter = wval;
+        elem.style.filter = wval;
+  }
+  document.querySelector('output').innerHTML = '.layerTile { <br>&nbsp;&nbsp; -webkit-filter: ' + (val ? val: 'none') + '; <br>&nbsp;&nbsp; -moz-filter: ' + (wval ? wval: 'none') + ';<br>&nbsp;&nbsp; -ms-filter: ' + (wval ? wval: 'none') + ';<br>&nbsp;&nbsp; -o-filter: ' + (wval ? wval: 'none') + ';<br>&nbsp;&nbsp; -filter: ' + (wval ? wval: 'none') + ';<br>}';
+}
+
+window.addEventListener('keydown', function(e) {
+  if (e.keyCode == 27) { // ESC
+    document.querySelector('details').open = false;
+  }
+}, false);
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-60380603-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>
+
